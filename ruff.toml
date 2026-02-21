@@ -1,0 +1,36 @@
+exclude = [
+    '.cache/',
+    ".venv/",
+    "venv/",
+]
+
+line-length = 120
+indent-width = 4
+target-version = 'py312'
+
+[lint]
+select = [
+    'F', # pyflakes
+    'E', # pycodestyle errors
+    'W', # pycodestyle warnings
+    'I', # isort
+    'Q', # quotes
+    'TID', # tidy imports
+    'ANN', # annotations
+    'T20', # print
+    'B', # bugbear
+    'SIM', # simplify,
+    'ISC002', # implicit-str-concat
+    'ISC003',
+]
+ignore = ['B008']
+preview = true
+
+[lint.flake8-quotes]
+inline-quotes = 'single'
+
+[format]
+quote-style = 'single'
+
+[lint.isort]
+split-on-trailing-comma = true
