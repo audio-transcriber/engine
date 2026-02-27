@@ -22,5 +22,5 @@ class TranscriptionUseCase:
         file = BytesIO(self._storage.get(filename, bucket_name))
         new_filename = Path(filename).with_suffix('.txt').name
         self._storage.save(self._transcriptor.transcribe(file), new_filename, bucket_name)
-        msg = {'filename': filename}
+        msg = {'filename': new_filename, 'bucket_name': bucket_name}
         self._rabbitmq_producer.send(json.dumps(msg).encode(), 'transcription_done')
