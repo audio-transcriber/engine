@@ -41,3 +41,17 @@ jobs:
 
       - name: Run tests
         run: uv run pytest
+
+  release:
+    if: github.ref == 'refs/heads/main'
+    needs: [ lint ]  # TODO когда появятся тесты включить сюда
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t ${{ vars.REGISTRY }}/engine:latest .
+
+      - name: Push image
+        run: docker push ${{ vars.REGISTRY }}/engine:latest
