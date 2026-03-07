@@ -55,3 +55,11 @@ jobs:
 
       - name: Push image
         run: docker push ${{ vars.REGISTRY }}/engine:latest
+
+  cleanup:
+    needs: [ release ]
+    runs-on: self-hosted
+
+    steps:
+      - name: Cleanup image
+        run: docker rmi ${{ vars.REGISTRY }}/engine:latest
