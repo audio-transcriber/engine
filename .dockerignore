@@ -1,6 +1,7 @@
 __pycache__/
 .venv/
 .git/
+.github/
 logs/
 README.md
 Dockerfile

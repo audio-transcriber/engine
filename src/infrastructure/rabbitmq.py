@@ -2,6 +2,8 @@ import json
 from typing import Callable
 
 import pika
+from pika.adapters.blocking_connection import BlockingChannel
+from pika.spec import Basic, BasicProperties
 
 
 class RabbitMQProducer:
@@ -29,8 +31,8 @@ class RabbitMQConsumer:
             channel.start_consuming()
 
 
-def transcription_todo_callback(usecase) -> Callable:
-    def wrapper(ch, method, properties, body: bytes) -> None:
+def transcription_todo_callback(usecase: ...) -> Callable:  # TODO типизация
+    def wrapper(ch: BlockingChannel, method: Basic.Deliver, properties: BasicProperties, body: bytes) -> None:
         try:
             data = json.loads(body.decode())
             usecase.transcribe(data['filename'], data['bucket_name'])
