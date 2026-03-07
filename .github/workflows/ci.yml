@@ -11,9 +11,7 @@ env:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
-    container:
-      image: python:3.12-slim
+    runs-on: self-hosted
 
     steps:
       - uses: actions/checkout@v4
@@ -31,9 +29,7 @@ jobs:
         run: uv run ruff check
 
   test:
-    runs-on: ubuntu-latest
-    container:
-      image: python:3.12-slim
+    runs-on: self-hosted
 
     steps:
       - uses: actions/checkout@v4
