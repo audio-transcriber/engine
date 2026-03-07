@@ -1,9 +1,11 @@
 import tempfile
 from io import BytesIO
 
+from whisper.model import Whisper as WhisperModel
+
 
 class WhisperTranscriptor:
-    def __init__(self, model):
+    def __init__(self, model: WhisperModel) -> None:
         self._model = model
 
     def transcribe(self, file: BytesIO) -> bytes:

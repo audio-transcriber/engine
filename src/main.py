@@ -1,9 +1,10 @@
 from contextlib import contextmanager, suppress
+from typing import Generator
 
 import whisper
 
-import config
 import application.containers
+import config
 import infrastructure.containers
 from infrastructure.rabbitmq import transcription_todo_callback
 
@@ -30,7 +31,7 @@ transcription_container = application.containers.TranscriptionContainer(
 
 
 @contextmanager
-def lifespan():
+def lifespan() -> Generator[None, None, None]:
     rabbitmq_container.init_resources()
     try:
         with suppress(KeyboardInterrupt):
@@ -39,7 +40,7 @@ def lifespan():
         rabbitmq_container.shutdown_resources()
 
 
-def main():
+def main() -> None:
     with lifespan():
         rabbitmq_container.consumer().consume(
             'transcription_todo', transcription_todo_callback(transcription_container.usecase())
