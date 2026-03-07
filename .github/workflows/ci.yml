@@ -41,20 +41,3 @@ jobs:
 
       - name: Run tests
         run: uv run pytest
-
-  release:
-    if: github.ref == 'refs/heads/main'
-    needs: [lint]  # TODO когда появятся тесты включить сюда
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Login to GHCR
-        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
-
-      - name: Build image
-        run: docker build -t ghcr.io/${{ github.repository }}:latest .
-
-      - name: Push image
-        run: docker push ghcr.io/${{ github.repository }}:latest
