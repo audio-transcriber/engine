@@ -42,6 +42,9 @@ class RabbitMQContainer(containers.DeclarativeContainer):
             pika.ConnectionParameters,
             host,
             port,
+            heartbeat=0,
+            connection_attempts=5,
+            retry_delay=5,
         ),
     )
     producer_client = providers.Resource(client)

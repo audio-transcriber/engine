@@ -39,5 +39,6 @@ def transcription_todo_callback(usecase: ...) -> Callable:  # TODO типиза�
             ch.basic_ack(delivery_tag=method.delivery_tag)
         except Exception:
             ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+            raise
 
     return wrapper

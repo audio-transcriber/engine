@@ -1,6 +1,7 @@
 from dependency_injector import containers, providers
 
 from application.usecases import TranscriptionUseCase
+from config.loguru import transcription_logger
 
 
 class TranscriptionContainer(containers.DeclarativeContainer):
@@ -13,4 +14,5 @@ class TranscriptionContainer(containers.DeclarativeContainer):
         providers.Factory(whisper_container.transcriptor),
         providers.Factory(minio_container.storage),
         providers.Factory(rabbitmq_container.producer),
+        providers.Object(transcription_logger),
     )

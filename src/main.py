@@ -1,17 +1,17 @@
-from contextlib import contextmanager, suppress
+import signal
+from contextlib import contextmanager
 from typing import Generator
 
 import whisper
 
 import application.containers
-import config
+from config.minio import minio_settings
+from config.rabbitmq import rabbitmq_settings
+from config.loguru import worker_logger
 import infrastructure.containers
 from infrastructure.rabbitmq import transcription_todo_callback
 
 model = whisper.load_model('base')
-
-minio_settings = config.MinIOSettings()
-rabbitmq_settings = config.RabbitMQSettings()
 
 whisper_container = infrastructure.containers.WhisperContainer(model=model)
 minio_container = infrastructure.containers.MinIOContainer(
@@ -30,21 +30,40 @@ transcription_container = application.containers.TranscriptionContainer(
 )
 
 
+class BreakException(Exception):
+    pass
+
+
+def handler(signum, frame):
+    raise BreakException
+
+
+signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGTERM, handler)
+
+
 @contextmanager
 def lifespan() -> Generator[None, None, None]:
     rabbitmq_container.init_resources()
-    try:
-        with suppress(KeyboardInterrupt):
-            yield
-    finally:
-        rabbitmq_container.shutdown_resources()
+    worker_logger.debug('Ресурсы инициализированы')
+    yield
+    rabbitmq_container.shutdown_resources()
+    worker_logger.debug('Ресурсы остановлены')
 
 
 def main() -> None:
     with lifespan():
-        rabbitmq_container.consumer().consume(
-            'transcription_todo', transcription_todo_callback(transcription_container.usecase())
-        )
+        while True:
+            worker_logger.info('Приложение запущено')
+            try:
+                rabbitmq_container.consumer().consume(
+                    'transcription_todo', transcription_todo_callback(transcription_container.usecase())
+                )
+            except BreakException:
+                worker_logger.info('Приложение остановлено')
+                break
+            except Exception as e:
+                worker_logger.exception(e)
 
 
 if __name__ == '__main__':
