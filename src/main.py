@@ -1,14 +1,15 @@
 import signal
 from contextlib import contextmanager
+from types import FrameType
 from typing import Generator
 
 import whisper
 
 import application.containers
+import infrastructure.containers
+from config.loguru import worker_logger
 from config.minio import minio_settings
 from config.rabbitmq import rabbitmq_settings
-from config.loguru import worker_logger
-import infrastructure.containers
 from infrastructure.rabbitmq import transcription_todo_callback
 
 model = whisper.load_model('base')
@@ -34,7 +35,7 @@ class BreakException(Exception):
     pass
 
 
-def handler(signum, frame):
+def handler(signum: int, frame: FrameType) -> None:
     raise BreakException
 
 
