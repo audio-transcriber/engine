@@ -35,7 +35,7 @@ def transcription_todo_callback(usecase: ...) -> Callable:  # TODO типиза�
     def wrapper(ch: BlockingChannel, method: Basic.Deliver, properties: BasicProperties, body: bytes) -> None:
         try:
             data = json.loads(body.decode())
-            usecase.transcribe(data['filename'], data['bucket_name'])
+            usecase.transcribe(data['sid'], data['filename'], data['bucket_name'])
             ch.basic_ack(delivery_tag=method.delivery_tag)
         except Exception:
             ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
